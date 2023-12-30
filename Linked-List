@@ -1,0 +1,197 @@
+class Registro:
+    def __init__(self, nombre=None, apellidos=None, telefono=None, direccion=0, dni=0):
+        self.nombre=nombre
+        self.apellidos=apellidos
+        self.telefono=telefono
+        self.direccion=direccion
+        self.dni=dni
+        self.next = None
+    def __str__(self):
+        str=(f'\nEl nombre de la persona es: {self.nombre}')        
+        str+=(f'\nEl apellido de al persona es: {self.apellidos}')
+        str+=(f'\nEl teléfono de la persona es: {self.telefono}')
+        str+=(f'\nLa direccón de la persona es: {self.direccion}')
+        str+=(f'\nEl DNI de la persona es: {self.dni}')
+        return str
+    
+
+
+class ListaEnlazada: #A completar por el alumno
+    def __init__(self):
+        self.head=None
+    def AddNodoPrincipio(self, nodo:Registro):
+        aux=self.head
+        if (aux==None):
+            self.head=nodo
+        else:
+            nodo.next=aux
+            self.head=nodo
+        pass
+    def RecorrerLista(self):
+        aux=self.head
+        while(aux!=None):
+            print(aux)
+            aux=aux.next
+        pass
+    def AddNodoAlfabetico(self, nodo:Registro):
+        ant=None
+        aux=self.head
+        while (aux!=None and aux.nombre<nodo.nombre):
+            ant=aux
+            aux=aux.next
+        if (aux==self.head):
+            nodo.next=self.head
+            self.head=nodo
+        elif (aux==None):
+            ant.next=nodo
+        else:
+            nodo.next=aux
+            ant.next=nodo
+        pass
+    def Buscar(self, dni):
+        encontrado=False
+        ant=None
+        aux=self.head
+        while(aux!=None and encontrado==False):
+            if (aux.dni==dni):
+                encontrado=True
+            else:
+                ant=aux
+                aux=aux.next
+        return [encontrado, aux, ant]
+    def Actualizar(self, dni):
+        [encontrado, aux, ant]=self.Buscar(dni)
+        if (encontrado==False):
+            print("Lo siento, esta persona no esta en la sistema")
+        else:
+            print("Menu Segundario:")
+            print("1. Actualizar nombre")
+            print("2. Actualizar apellido")
+            print("3. Actualizar telefono")
+            print("4. Actualizar direccion")
+            act_menu=int(input("Por Favor elige un opcion"))
+            if (act_menu==1):
+                print("Introduce el nombre nuevo")
+                name=input("Introduce el nombre nuevo")
+                aux.nombre=name
+            elif(act_menu==2):
+                print("Introduce el apellido nuevo")
+                ape=input("Introduce el apellido nuevo")
+                aux.apellidos=ape
+            elif (act_menu==3):
+                print("Introduce el telefono nuevo")
+                tele=input("Introduce el telefono nuevo")
+                aux.telefono=tele
+            elif (act_menu==4):
+                print("Introduce el direccion nuevo")
+                dire=input("Introduce el direccion nuevo")
+                aux.direccion=dire
+        pass
+    def Borrar(self, dni): 
+        [encontrado, aux, ant]=self.Buscar(dni)
+        if (encontrado==False):
+            print("No se pudo encontrar ese registro")
+        elif (aux==self.head):
+            self.head=aux.next
+        else:
+            ant.next=aux.next
+            print("Se ha borrado con exito")
+        pass
+    def BuscarPorNombre(self, nombre):
+        encontrado=False
+        ant=None
+        aux=self.head
+        while(aux!=None and encontrado==False):
+            if (aux.nombre==nombre):
+                encontrado=True
+            else:
+                ant=aux
+                aux=aux.next
+        print("Nombre:{0}, Apellidos:{1}, Telefono:{2}, Direccion:{3}, DNI: {4}".format(aux.nombre, aux.apellidos, aux.telefono, aux.direccion, aux.dni))
+        pass
+    def SortAlph(self):
+        aux=self.head
+        prox=aux.next
+        if aux.nombre>prox.nombre:
+            prox=aux
+            aux=prox
+    def SortAlpha(self):
+        if self.head is None:
+            return
+
+        swapped = True
+        while swapped:
+            swapped = False
+            aux = self.head
+            while aux.next is not None:
+                if aux.nombre > aux.next.nombre:
+                    aux.nombre, aux.next.nombre = aux.next.nombre, aux.nombre
+                    aux.apellidos, aux.next.apellidos = aux.next.apellidos, aux.apellidos
+                    aux.telefono, aux.next.telefono = aux.next.telefono, aux.telefono
+                    aux.direccion, aux.next.direccion = aux.next.direccion, aux.direccion
+                    aux.dni, aux.next.dni = aux.next.dni, aux.dni
+                    swapped = True
+                aux = aux.next
+
+
+
+def Menu():
+    print("MENU");
+    print("1. Insertar un nuevo Registro.")
+    print("2. Borrar un Registro.")
+    print("3. Buscar Registro por nombre de Registro.")
+    print("4. Listar todos los Registros del Sistema. ") 
+    print("5. Ordenar lista por nombre.")
+    print("6. Borrar toda la lista enlazada.")
+    print("7. Actualizar un Registro de la lista enlazada")
+    print("8. Salir.")
+    opc=int(input("Introduzca una opcion: "))
+    while(9<opc and opc<1):
+        opc=int(input("Por favor, Introduzca una opcion de nuevo: "))
+    return opc
+
+
+if __name__ == "__main__":
+    lista=ListaEnlazada()
+    opc=Menu()
+    while(0<opc and opc<9):
+        #Finish code for numbers 1-7
+        if (opc==1):
+            nodo=Registro()
+            nodo.nombre=input("Introducir nombre")
+            nodo.apellidos=input("Introducir apellido")
+            nodo.telefono=input("Introducir telefono")
+            nodo.direccion=input("Introducir direccion")
+            nodo.dni=input("Introducir dni")
+            lista.AddNodoPrincipio(nodo)
+
+        elif(opc==2):
+            print("Que dni quieres borrar?")
+            delete=input("Introducir dni de la persona que quieres borar:")
+            lista.Borrar(delete)
+
+        elif(opc==3):
+            print("Introducir nombre de la persona que quieres buscar:")
+            name=input("Introducir nombre de la persona que quieres buscar:")
+            print(name,":")
+            print(lista.BuscarPorNombre(name))
+
+
+        elif(opc==4):
+            print(lista.RecorrerLista())
+
+        elif(opc==5):
+            lista.SortAlpha()
+            print("Se ha ordenado la lista alfabeticamente con exito!")
+
+        elif(opc==6):
+            lista.__init__()
+
+        elif(opc==7):
+            dni_given=input("Introduce el dni de la persona que quieres actualizar")
+            lista.Actualizar(dni_given)
+            
+        elif(opc==8):
+            print("Gracias por utilizar software ICAI")
+            break
+        opc=Menu()
