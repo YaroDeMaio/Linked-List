@@ -1,0 +1,341 @@
+from colorama import Fore, Back, Style
+
+class Nodo():
+    def __init__(self,value):
+        self.clave = value
+        self.color = 1 #rojo = 1, negro = 0
+        self.padre = None
+        self.izq = None
+        self.dcha = None
+    
+    def __str__(self):
+        print(f'value: {self.clave}')
+        print(f'color: {self.clave}')
+
+    def tio(self):
+        padre = self.padre
+        abuelo = padre.padre
+        if(abuelo != None):
+            if(padre==abuelo.dcha):
+                tio=abuelo.izq
+            else:
+                tio=abuelo.dcha
+        else:
+            tio=None
+        return tio
+
+
+class Arbol():
+    def __init__(self):
+        self.raiz = None
+    
+    def insertarArbolBin(self, n):
+        p = None
+        x = self.raiz
+        while x != None:
+            p = x
+            if (n.clave<x.clave):
+                x = x.izq
+            else:
+                x = x.dcha
+        n.padre = p
+        if (p == None):
+            self.raiz = n
+        else:
+            if n.clave<p.clave:
+                p.izq = n
+            else:
+                p.dcha = n
+
+
+    def insertarArbolRN(self, n):
+        self.insertarArbolBin(n)
+        n.color = 1
+        while (n != self.raiz and n.padre.color == 1):
+            if n.padre == n.padre.padre.izq :
+                y = n.tio()
+                if y == None and n.padre.color == 1:
+                    n.padre.padre.color = 1
+                    n.padre.color = 0
+                elif y == None and n.padre.color == 0:
+                    pass
+                elif y.color == 1:
+                    y.color = 0
+                    n.padre.color = 0
+                    n.padre.padre.color = 1
+                    n = n.padre.padre
+                else:
+                    if n == n.padre.dcha:
+                        n = n.padre
+                        self.RotarIzqArbolBin(n)
+                    n.padre.color = 0
+                    n.padre.padre.color = 1
+                    self.RotarDchaArbolBin(n.padre.padre)
+
+            else:
+                y = n.tio()
+                if y == None and n.padre.color == 1:
+                    n.padre.padre.color = 1
+                    n.padre.color = 0
+                elif y == None and n.padre.color == 0:
+                    pass
+                elif y.color == 1:
+                    y.color = 0
+                    n.padre.color = 0
+                    n.padre.padre.color = 1
+                    n = n.padre.padre
+                else:
+                    if n == n.padre.izq:
+                        n = n.padre
+                        self.RotarDchaArbolBin(n)
+                    n.padre.color = 0
+                    n.padre.padre.color = 1
+                    self.RotarIzqArbolBin(n.padre.padre)
+        self.raiz.color = 0
+        pass
+
+    def RotarIzqArbolBin(self, n):
+        y = n.dcha
+        n.dcha = y.izq
+        if y.izq != None:
+            y.izq.padre = n
+        y.padre = n.padre
+        if n.padre == None:
+            self.raiz = y
+        else:
+            if n == n.padre.izq:
+                n.padre.izq = y
+            else:
+                n.padre.dcha = y
+        y.izq = n
+        n.padre = y
+        pass
+        
+
+    def RotarDchaArbolBin(self, n):
+        y = n.izq
+        n.izq = y.dcha
+        if y.dcha != None:
+            y.dcha.padre = n
+        y.padre = n.padre
+        if n.padre == None:
+            self.raiz = y
+        else:
+            if n == n.padre.dcha:
+                n.padre.dcha = y
+            else:
+                n.padre.izq = y
+        y.dcha = n
+        n.padre = y
+        pass
+
+
+    def RecorrerEnOrden(self, n):
+        if (n != None):
+            self.RecorrerEnOrden(n.izq)
+            print (n.clave, end = ', ')
+            self.RecorrerEnOrden(n.dcha)
+
+
+    def Minimo(self, n):
+        if n.clave != None:
+            while n.dcha != None:
+                n = n.izq
+        return n
+            
+    def Maximo(self,n):
+        if(n.clave != None):
+            while( n.dcha != None):
+                n = n.dcha
+        return n
+
+    def Sucesor(self,nodo):
+        if (nodo != None):
+            if(nodo.dcha != None):
+                p= self.Minimo(nodo.dcha)
+            elif nodo.izq != None:
+                p=self.Minimo(nodo.izq)
+            else:
+                p = None
+        return p
+   
+    
+    def PintarArbol(self, n, level):
+        if n != None:
+            self.PintarArbol(n.dcha, level + 1)
+            if n.color == 0:
+                print(' ' * 4 * level +Fore.WHITE +'-> '+Fore.BLACK +str(n.clave))
+            else:
+                print(' ' * 4 * level +Fore.WHITE+ '-> '+Fore.RED +str(n.clave))
+            self.PintarArbol(n.izq, level + 1)
+
+    def Busqueda(self, k):
+        n = self.raiz
+        while (n!=None and k != n.clave):
+            if k<n.clave:
+                n = n.izq
+            else:
+                n = n.dcha
+        if n == None:
+            return None
+        else:
+            return n.clave
+    
+    def Busqueda_Borrar(self, k):
+        n = self.raiz
+        while (n!=None and k != n.clave):
+            if k<n.clave:
+                n = n.izq
+            else:
+                n = n.dcha
+        if n == None:
+            return None
+        else:
+            return n
+
+    def Borrado_RN_Casos(self, n):
+        while (n != self.raiz) and (n.color==0):
+            if (n == n.padre.izq):
+                k = n.padre.dcha
+                
+                if (k.color==1):
+                    k.color = 0
+                    n.padre.color = 1
+                    self.RotarIzqArbolBin(n.padre)
+                    k = n.padre.dcha
+                
+                if (k.izq.color == 0) and k.dcha.color == 0 :
+                    k.color = 1
+                    n=n.padre
+                
+                if k.dcha == 0:
+                    k.izq.color = 0
+                    k.color = 1 
+                    self.RotarDchaArbolBin(k)
+                    k=n.padre.dcha
+                
+                k.color = n.padre.color
+                n.padre.color = 0
+                k.dcha.color = 0
+                n = self.raiz
+            else:
+                k = n.padre.izq
+                
+                if k.color == 1:
+                    k.color = 0
+                    n.padre.color = 1
+                    self.RotarDchaArbolBin(n.padre)
+                    k = n.padre.izq
+                
+                if k.dcha.color == 0 and k.izq.color == 0:
+                    k.color = 1
+                    n = n.padre
+
+                if k.izq == 0:
+                    k.dcha.color = 0
+                    k.color = 1
+                    self.RotarIzqArbolBin(k)
+                    k = n.padre.izq
+
+                k.color = n.padre.color
+                n.padre.color = 0
+                k.izq.color = 0
+                n = self.raiz
+        n.color = 0
+
+    def Borrar(self, b):
+        n = self.Busqueda_Borrar(b)
+        if n.izq == None and n.dcha == None:
+            y = n
+        else:
+            y = self.Sucesor(n)
+        if y.izq != None:
+            x = y.izq
+        else:
+            x = y.dcha
+        if x != None:
+            x.padre = y.padre 
+        if y.padre == None:
+            self.raiz = x
+        else:
+            if y == y.padre.izq:
+                y.padre.izq = x
+            else:
+                y.padre.dcha = x
+        if y != n:
+            n = y
+        if x != None:
+            self.Borrado_RN_Casos(x)
+
+
+
+
+
+
+def Opciones():
+    print("---------------------------" + '\n' + '           Menu           ' + '\n' + "---------------------------")
+    print('1 - Insertar un nuevo elemento al arbol') 
+    print('2 - Eliminar un elemento del arbol') 
+    print('3 - Buscar elemento en el arbol') 
+    print('4 - Mostrar arbol de forma visual') 
+    print('5 - Listar los elementos del árbol de forma ordenada') 
+    print('6 - Eliminar todo el arbol') 
+    print('7 - Cargar arbol desde fichero') 
+    print('8 - Salir') 
+    opc = int(input("Por Favor, elige su opcion"))
+    while opc >8 or opc<1:
+        opc = int(input("Por Favor, elige una opcion valida"))
+    return opc
+
+
+
+if __name__ == "__main__":
+    opcion = Opciones()
+    arbol = Arbol()
+    while opcion!=10:
+        if opcion == 1:
+            num=int(input("Introduce numero nuevo"))
+            n = Nodo(num) 
+            arbol.insertarArbolRN(n)
+            print(f"Añadiste el nodo con valor {num} al arbol")
+
+        elif opcion ==2:
+            n = int(input('Que nodo deseas borrar? '))
+            res = arbol.Busqueda(n)
+            if res != None:
+                arbol.Borrar(n)
+                print(f'Se ha borrado el nodo {n} con exito')
+            else:
+                print(f"No se ha encontrado el nodo {n} en el arbol")
+                
+        elif opcion == 3:
+            n = int(input('Que nodo estas buscando? '))
+            res = arbol.Busqueda(n)
+            if res == None:
+                print('No existe ese nodo en el arbol')
+            else:
+                print(f"El nodo {res} esta en el arbol")
+
+        elif opcion == 4:
+            arbol.PintarArbol(arbol.raiz,0)
+            print(Style.RESET_ALL)
+        
+        elif opcion == 5:
+            r = arbol.raiz
+            if r == None:
+                print('No hay arbol')
+            else:
+                print("El arbol recorrido en orden:")
+                arbol.RecorrerEnOrden(r)
+                print('\n')
+        
+        elif opcion == 6:
+            arbol.raiz = None
+
+        elif opcion == 7:
+            pass
+        
+        elif opcion == 8:
+            print('Saliste de la sistema, Gracias')
+            break
+        opcion = Opciones()
